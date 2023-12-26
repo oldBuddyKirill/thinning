@@ -58,8 +58,12 @@ int main()
     // алгоритм явно можно оптимизировать
     int step = precision;
     bool increasePrecision = true;
-    while ((360*shift % step))
-        increasePrecision ? --step : ++step;
+    while ((360*shift % step)) {
+        if (increasePrecision)
+            --step;
+        else
+            ++step;
+    }
     int currentStep = 0;
     int nextStep = currentStep + step;
     int checkCounter = 0;
@@ -95,23 +99,40 @@ int main()
     // в результате необходимо хранить только градусы, для отрисовки пеленгов
     set<float> result;
     // кф взят с потолка, надо попытаться подобрать экспериментальным путем
-    int n = std::max(1, std::min<int>(maxN, std::round(precision/std::sqrt(shift))));
+    // неплохо было бы добавить зависимость от заданной точности
+//    int n = std::max(1, std::min<int>(maxN, std::round(precision/std::sqrt(shift))));
+    int n = std::max(1, std::min<int>(maxN, 100));
     for (auto &&item : splittedData) {
         // идея в том, что чем меньше кф "k", тем меньше пеленгов на данном промежутке необходимо отобразить
-        float k = (item.second.size() / static_cast<float>(maxN)) / n;
-        for (size_t i = 0; i < item.second.size(); i += std::round(1/k)) {
+        size_t size = item.second.size();
+        float k = (size / static_cast<float>(maxN)) / n;
+        int advance = std::round(1.0/k);
+        if (advance > size) {
+            // елси шаг больше размера мапы, то просто берем среднее значение из этого диапазона
+            int i = size / 2;
             int degree = std::next(item.second.begin(), i)->first;
             result.insert(static_cast<float>(degree)/shift);
+        } else {
+            for (int i = advance/2; i < size; i += advance) {
+                int degree = std::next(item.second.begin(), i)->first;
+                result.insert(static_cast<float>(degree)/shift);
+            }
         }
+//        for (size_t i = 0; i < size; i += advance) {
+//            int degree = std::next(item.second.begin(), i)->first;
+//            result.insert(static_cast<float>(degree)/shift);
+//        }
     }
 
 
     // ############################## вывод результата ##############################
     cout << "RESULT (" << result.size() << ") ==>\n";
     counter = 0;
+    float previous = 0;
     for (auto &&item : result) {
         cout << fixed << setw(11) << ++counter << ": "
-             << setw(14) << setprecision(getOutputPrecision()) << item << endl;
+             << setw(14) << setprecision(getOutputPrecision()) << item << ' ' << (item - previous) << endl;
+        previous = item;
     }
     cout << endl;
 
