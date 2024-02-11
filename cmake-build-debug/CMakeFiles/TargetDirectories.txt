@@ -1,0 +1,3 @@
+/home/oldbuddy/Projects/thinning/cmake-build-debug/CMakeFiles/thinning.dir
+/home/oldbuddy/Projects/thinning/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/oldbuddy/Projects/thinning/cmake-build-debug/CMakeFiles/rebuild_cache.dir
