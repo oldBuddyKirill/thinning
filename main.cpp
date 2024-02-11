@@ -154,10 +154,10 @@ static map<int, int> genValues(const size_t &samples, const float &mean, const f
 
     random_device rd;
     mt19937 gen(rd());
-    normal_distribution<float> distr(mean, stdDev);
+    normal_distribution<float> distribution(mean, stdDev);
     for (size_t i = 0; i < samples; ++i) {
         // считаем, что допустимая точность не может быть больше 0.0001 градуса
-        int degree = static_cast<int>(std::round(distr(gen) * shift));
+        int degree = static_cast<int>(std::round(distribution(gen) * shift));
         if (degree < 0)
             degree += 360 * shift;
         else if (degree >= (360 * shift))
